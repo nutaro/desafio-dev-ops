@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapi-deployment
+  labels:
+    app: nodeapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodeapi
+  template:
+    metadata:
+      labels:
+        app: nodeapi
+    spec:
+      containers:
+        - name: api
+          image: nutaro/node_api:latest
+          imagePullPolicy: "Always"
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            httpGet:
+              path: /api
+              port: 5000
+          livenessProbe:
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            httpGet:
+              path: /api
+              port: 5000
+          env:
+            - name: db_password
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: db_root_password
+            - name: db_name
+              value: postgres
+            - name: db_user
+              value: postgres
+            - name: db_port
+              value: "5432"
+            - name: port
+              value: "5000"
+            - name: db_url
+              value: postgres.default.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: nodeapi
+  type: LoadBalancer
