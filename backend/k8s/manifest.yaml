@@ -21,17 +21,11 @@ spec:
           imagePullPolicy: "Always"
           ports:
             - containerPort: 5000
-          readinessProbe:
-            initialDelaySeconds: 5
-            timeoutSeconds: 1
-            httpGet:
-              path: /api
-              port: 5000
           livenessProbe:
             initialDelaySeconds: 5
             timeoutSeconds: 1
             httpGet:
-              path: /api
+              path: /health
               port: 5000
           env:
             - name: db_password

@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres
+        image: nutaro/postgres:users-devops
         imagePullPolicy: "IfNotPresent"
         env:
         - name: POSTGRES_PASSWORD
